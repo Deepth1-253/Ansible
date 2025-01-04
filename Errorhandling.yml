@@ -1,0 +1,23 @@
+hosts: all
+user: root
+tasks:
+  - name: Install security updates
+    ansible.builtin.apt:
+      name: "{{ Item}}"
+      state: latest
+      loop:
+        - openssh
+        - openssl
+    ignore_errors: yes
+  - name: check if docker is installed
+    ansible.builtin.command:
+      cmd: docker --version
+      register: output
+    ignore_errors: yes
+    ansible.builtin.debug:
+      var: output
+  - name: Install docker
+    ansible.builtin.apt:
+      name: docker.io
+      state: present
+    when: output is failed
