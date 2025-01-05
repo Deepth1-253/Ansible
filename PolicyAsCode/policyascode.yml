@@ -1,0 +1,17 @@
+---
+- name: policy as code on aws s3
+  hosts: all
+  become: true
+  tasks:
+    - name: list aws s3 buckets
+      amazon.aws.s3_bucket_info:
+      register: result
+
+    - debug:
+        var: result
+
+    - name: enable s3 bucket versoning
+      amazon.aws.s3_bucket:
+        name: "{{ item.name }}"
+        versioning: yes
+      loop: "{{ result.buckets }}"
